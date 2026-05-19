@@ -1,11 +1,14 @@
 import React from "react";
-import { NavigationContainer } from "@react-navigation/native";
+import { DarkTheme, DefaultTheme, NavigationContainer } from "@react-navigation/native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { useEffect } from "react";
 import { AppState } from "react-native";
+import { StatusBar } from "expo-status-bar";
 
 import { AppNavigator } from "./src/navigation/AppNavigator";
 import { AuthProvider, useAuth } from "./src/context/AuthContext";
+import { ThemeProvider } from "./src/theme/ThemeContext";
+import { useTheme } from "./src/theme/useTheme";
 import { registerPushToken } from "./src/services/pushService";
 import {
   processPendingCheckInEscalation,
@@ -63,15 +66,40 @@ function BootstrapEffects() {
   return null;
 }
 
+function ThemedNavigation() {
+  const { theme, resolvedMode } = useTheme();
+  const navigationTheme = {
+    ...(resolvedMode === "dark" ? DarkTheme : DefaultTheme),
+    colors: {
+      ...(resolvedMode === "dark" ? DarkTheme.colors : DefaultTheme.colors),
+      primary: theme.primary,
+      background: theme.background,
+      card: theme.surface,
+      text: theme.text,
+      border: theme.border,
+      notification: theme.danger,
+    },
+  };
+
+  return (
+    <>
+      <StatusBar style={resolvedMode === "dark" ? "light" : "dark"} backgroundColor={theme.background} />
+      <NavigationContainer theme={navigationTheme}>
+        <AppNavigator />
+      </NavigationContainer>
+    </>
+  );
+}
+
 export default function App() {
   return (
     <SafeAreaProvider>
-      <AuthProvider>
-        <BootstrapEffects />
-        <NavigationContainer>
-          <AppNavigator />
-        </NavigationContainer>
-      </AuthProvider>
+      <ThemeProvider>
+        <AuthProvider>
+          <BootstrapEffects />
+          <ThemedNavigation />
+        </AuthProvider>
+      </ThemeProvider>
     </SafeAreaProvider>
   );
 }

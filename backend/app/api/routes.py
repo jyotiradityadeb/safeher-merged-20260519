@@ -161,10 +161,15 @@ async def create_alert(
     )
     request_base_url = str(request.base_url).rstrip("/")
     hostname = (urlparse(request_base_url).hostname or "").lower()
-    # For demo tunnels such as *.loca.lt, force the configured public room URL.
-    # This avoids anti-abuse interstitial pages when contacts open shared live-room links.
-    if hostname in {"127.0.0.1", "localhost", "::1"} or hostname.endswith(".loca.lt"):
-        public_base_url = settings.public_room_base_url.rstrip("/")
+    configured_public_base = (settings.public_room_base_url or "").strip().rstrip("/")
+    configured_public_host = (urlparse(configured_public_base).hostname or "").lower() if configured_public_base else ""
+
+    # If PUBLIC_ROOM_BASE_URL is explicitly configured to a non-loopback host,
+    # always honor it for SMS/live-room links (useful for stable LAN demo links).
+    if configured_public_base and configured_public_host not in {"", "127.0.0.1", "localhost", "::1"}:
+        public_base_url = configured_public_base
+    elif hostname in {"127.0.0.1", "localhost", "::1"}:
+        public_base_url = configured_public_base or request_base_url
     else:
         public_base_url = request_base_url
     return await AlertService(db).create_alert(user["id"], payload, public_base_url=public_base_url)

@@ -166,7 +166,7 @@ npm test
 
 ## Continuous Integration
 
-- GitHub Actions workflow: [.github/workflows/ci.yml](C:\Users\jyoti\OneDrive\Desktop\safeher\.github\workflows\ci.yml)
+- GitHub Actions workflow: [`.github/workflows/ci.yml`](.github/workflows/ci.yml)
 - Backend tests run on every push and pull request
 - ML smoke tests run on every push and pull request
 - Admin tests run on every push and pull request
@@ -174,5 +174,5 @@ npm test
 
 ## Prototype Demo
 
-Use [prototype-demo.md](C:\Users\jyoti\OneDrive\Desktop\safeher\docs\prototype-demo.md) for the fastest college-presentation flow.
-Use [presentation-script.md](C:\Users\jyoti\OneDrive\Desktop\safeher\docs\presentation-script.md) and [presentation-slides.md](C:\Users\jyoti\OneDrive\Desktop\safeher\docs\presentation-slides.md) for your viva/demo presentation.
+Use [`docs/prototype-demo.md`](docs/prototype-demo.md) for the fastest college-presentation flow.
+Use [`docs/presentation-script.md`](docs/presentation-script.md) and [`docs/presentation-slides.md`](docs/presentation-slides.md) for your viva/demo presentation.

@@ -1,8 +1,8 @@
 import { StyleSheet } from "react-native";
 
-import { colors } from "../../theme/colors";
+import { AppTheme, darkTheme } from "../../theme/colors";
 
-export const styles = StyleSheet.create({
+export const createHomeStyles = (colors: AppTheme) => StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,
@@ -79,7 +79,7 @@ export const styles = StyleSheet.create({
     marginTop: 4,
   },
   prototypeButtonText: {
-    color: colors.text,
+    color: colors.buttonText,
     textAlign: "center",
     fontWeight: "700",
   },
@@ -90,25 +90,25 @@ export const styles = StyleSheet.create({
   },
   pendingModalOverlay: {
     flex: 1,
-    backgroundColor: "rgba(56, 15, 15, 0.82)",
+    backgroundColor: colors.modalOverlay,
     justifyContent: "center",
     padding: 20,
   },
   pendingModalCard: {
-    backgroundColor: "#3f1d1d",
+    backgroundColor: colors.emergencySurface,
     borderRadius: 22,
     padding: 18,
     borderWidth: 1,
-    borderColor: "#fca5a5",
+    borderColor: colors.danger,
     gap: 10,
   },
   pendingTitle: {
-    color: "#fee2e2",
+    color: colors.emergencyText,
     fontWeight: "700",
     fontSize: 20,
   },
   pendingText: {
-    color: "#fecaca",
+    color: colors.emergencyMuted,
     lineHeight: 20,
   },
   pendingActions: {
@@ -117,7 +117,7 @@ export const styles = StyleSheet.create({
   },
   pendingDangerButton: {
     flex: 1,
-    backgroundColor: "#7f1d1d",
+    backgroundColor: colors.danger,
     borderRadius: 12,
     minHeight: 52,
     paddingVertical: 12,
@@ -132,7 +132,7 @@ export const styles = StyleSheet.create({
     justifyContent: "center",
   },
   pendingButtonText: {
-    color: colors.text,
+    color: colors.buttonText,
     textAlign: "center",
     fontWeight: "700",
   },
@@ -155,25 +155,25 @@ export const styles = StyleSheet.create({
     borderWidth: 1,
   },
   healthBadgeGreen: {
-    backgroundColor: "#14532d",
-    borderColor: "#22c55e",
+    backgroundColor: colors.healthGreenBackground,
+    borderColor: colors.healthGreenBorder,
   },
   healthBadgeYellow: {
-    backgroundColor: "#78350f",
-    borderColor: "#f59e0b",
+    backgroundColor: colors.healthYellowBackground,
+    borderColor: colors.healthYellowBorder,
   },
   healthBadgeRed: {
-    backgroundColor: "#7f1d1d",
-    borderColor: "#ef4444",
+    backgroundColor: colors.healthRedBackground,
+    borderColor: colors.healthRedBorder,
   },
   healthBadgeTitle: {
-    color: "#f8fafc",
+    color: colors.text,
     fontWeight: "700",
     fontSize: 12,
     marginBottom: 4,
   },
   healthBadgeValue: {
-    color: "#e2e8f0",
+    color: colors.textMuted,
     fontSize: 12,
   },
   cardTitle: {
@@ -219,7 +219,7 @@ export const styles = StyleSheet.create({
     fontWeight: "700",
   },
   urgencyText: {
-    color: "#fbbf24",
+    color: colors.warning,
     marginTop: 8,
     fontWeight: "700",
   },
@@ -288,37 +288,37 @@ export const styles = StyleSheet.create({
     borderRadius: 14,
   },
   logoutText: {
-    color: colors.text,
+    color: colors.buttonText,
     textAlign: "center",
     fontWeight: "700",
   },
   modalOverlay: {
     flex: 1,
-    backgroundColor: "rgba(0, 0, 0, 0.58)",
+    backgroundColor: colors.modalOverlay,
     justifyContent: "center",
     padding: 20,
   },
   fakeCallCard: {
-    backgroundColor: "#111827",
+    backgroundColor: colors.surface,
     borderRadius: 22,
     padding: 20,
     borderWidth: 1,
-    borderColor: "#374151",
+    borderColor: colors.border,
     gap: 8,
   },
   fakeCallHeader: {
-    color: "#9CA3AF",
+    color: colors.textMuted,
     fontSize: 14,
     textTransform: "uppercase",
     letterSpacing: 0.8,
   },
   fakeCallName: {
-    color: "#F9FAFB",
+    color: colors.text,
     fontSize: 24,
     fontWeight: "700",
   },
   fakeCallSubtext: {
-    color: "#D1D5DB",
+    color: colors.textMuted,
     marginBottom: 12,
   },
   fakeCallActions: {
@@ -327,50 +327,52 @@ export const styles = StyleSheet.create({
   },
   acceptButton: {
     flex: 1,
-    backgroundColor: "#16A34A",
+    backgroundColor: colors.success,
     borderRadius: 12,
     padding: 12,
   },
   declineButton: {
     flex: 1,
-    backgroundColor: "#DC2626",
+    backgroundColor: colors.danger,
     borderRadius: 12,
     padding: 12,
   },
   fakeCallButtonText: {
-    color: "#F9FAFB",
+    color: colors.buttonText,
     textAlign: "center",
     fontWeight: "700",
   },
   escapeCard: {
     flex: 1,
     margin: 20,
-    backgroundColor: "#F4F1EA",
+    backgroundColor: colors.surface,
     borderRadius: 20,
     borderWidth: 1,
-    borderColor: "#DDD5C7",
+    borderColor: colors.border,
     padding: 20,
     gap: 10,
   },
   escapeTitle: {
-    color: "#2C2A27",
+    color: colors.text,
     fontSize: 24,
     fontWeight: "700",
     marginBottom: 8,
   },
   escapeText: {
-    color: "#46413A",
+    color: colors.textMuted,
     fontSize: 16,
   },
   returnButton: {
     marginTop: "auto",
-    backgroundColor: "#2C7DA0",
+    backgroundColor: colors.primary,
     padding: 12,
     borderRadius: 12,
   },
   returnButtonText: {
-    color: "#FFFFFF",
+    color: colors.buttonText,
     textAlign: "center",
     fontWeight: "700",
   },
 });
+
+export const styles = createHomeStyles(darkTheme);

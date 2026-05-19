@@ -1,11 +1,14 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { FlatList, Linking, Pressable, StyleSheet, Text, View } from "react-native";
 
 import { api } from "../api/client";
-import { colors } from "../theme/colors";
+import { AppTheme } from "../theme/colors";
+import { useTheme } from "../theme/useTheme";
 import { getErrorMessage } from "../utils/errorMessage";
 
 export function AlertHistoryScreen() {
+  const { theme } = useTheme();
+  const styles = useMemo(() => createStyles(theme), [theme]);
   const [history, setHistory] = useState<any[]>([]);
   const [error, setError] = useState("");
 
@@ -51,7 +54,7 @@ export function AlertHistoryScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: AppTheme) => StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,

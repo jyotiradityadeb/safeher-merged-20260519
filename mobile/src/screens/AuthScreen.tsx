@@ -1,12 +1,15 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { ActivityIndicator, Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 
 import { useAuth } from "../context/AuthContext";
-import { colors } from "../theme/colors";
+import { AppTheme } from "../theme/colors";
+import { useTheme } from "../theme/useTheme";
 import { getErrorMessage } from "../utils/errorMessage";
 
 export function AuthScreen() {
   const { login, signup } = useAuth();
+  const { theme } = useTheme();
+  const styles = useMemo(() => createStyles(theme), [theme]);
   const [isSignup, setIsSignup] = useState(false);
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("demo@safeher.app");
@@ -42,16 +45,16 @@ export function AuthScreen() {
       </View>
       <View style={styles.formCard}>
         {isSignup ? (
-          <TextInput style={styles.input} placeholder="Full name" placeholderTextColor={colors.subtext} value={fullName} onChangeText={setFullName} />
+          <TextInput style={styles.input} placeholder="Full name" placeholderTextColor={theme.textMuted} value={fullName} onChangeText={setFullName} />
         ) : null}
-        <TextInput style={styles.input} placeholder="Email" placeholderTextColor={colors.subtext} value={email} onChangeText={setEmail} />
-        <TextInput style={styles.input} placeholder="Password" placeholderTextColor={colors.subtext} value={password} secureTextEntry onChangeText={setPassword} />
+        <TextInput style={styles.input} placeholder="Email" placeholderTextColor={theme.textMuted} value={email} onChangeText={setEmail} />
+        <TextInput style={styles.input} placeholder="Password" placeholderTextColor={theme.textMuted} value={password} secureTextEntry onChangeText={setPassword} />
         {isSignup ? (
-          <TextInput style={styles.input} placeholder="Phone number" placeholderTextColor={colors.subtext} value={phoneNumber} onChangeText={setPhoneNumber} />
+          <TextInput style={styles.input} placeholder="Phone number" placeholderTextColor={theme.textMuted} value={phoneNumber} onChangeText={setPhoneNumber} />
         ) : null}
         {error ? <Text style={styles.errorText}>{error}</Text> : null}
         <Pressable style={[styles.button, loading && styles.buttonDisabled]} onPress={handleSubmit} disabled={loading}>
-          {loading ? <ActivityIndicator color={colors.text} /> : <Text style={styles.buttonText}>{isSignup ? "Create Account" : "Login"}</Text>}
+          {loading ? <ActivityIndicator color={theme.buttonText} /> : <Text style={styles.buttonText}>{isSignup ? "Create Account" : "Login"}</Text>}
         </Pressable>
         <Pressable onPress={() => setIsSignup((value) => !value)}>
           <Text style={styles.switchText}>{isSignup ? "Already have an account? Login" : "New user? Signup"}</Text>
@@ -62,7 +65,7 @@ export function AuthScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: AppTheme) => StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: "center",
@@ -86,12 +89,12 @@ const styles = StyleSheet.create({
     marginBottom: 14,
   },
   heroBadgeText: {
-    color: colors.text,
+    color: colors.buttonText,
     fontWeight: "700",
     fontSize: 12,
   },
   formCard: {
-    backgroundColor: colors.card,
+    backgroundColor: colors.inputBackground,
     borderRadius: 24,
     padding: 18,
     borderWidth: 1,
@@ -128,7 +131,7 @@ const styles = StyleSheet.create({
     opacity: 0.7,
   },
   buttonText: {
-    color: colors.text,
+    color: colors.buttonText,
     fontWeight: "700",
     textAlign: "center",
   },
@@ -138,7 +141,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   errorText: {
-    color: "#fca5a5",
+    color: colors.danger,
     marginBottom: 8,
   },
   demoText: {

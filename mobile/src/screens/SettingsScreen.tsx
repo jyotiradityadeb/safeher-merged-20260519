@@ -1,14 +1,18 @@
-import React, { useEffect, useState } from "react";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import React, { useEffect, useMemo, useState } from "react";
+import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 
 import {
   getSafetyPreferences,
   saveSafetyPreferences,
   SafetyPreferences,
 } from "../services/safetyPreferences";
-import { colors } from "../theme/colors";
+import { AppTheme } from "../theme/colors";
+import { ThemeMode } from "../theme/ThemeContext";
+import { useTheme } from "../theme/useTheme";
 
 export function SettingsScreen() {
+  const { theme, mode, setMode } = useTheme();
+  const styles = useMemo(() => createStyles(theme), [theme]);
   const [prefs, setPrefs] = useState<SafetyPreferences | null>(null);
   const [message, setMessage] = useState("");
 
@@ -22,6 +26,11 @@ export function SettingsScreen() {
     setMessage("Safety settings saved.");
   };
 
+  const updateTheme = async (nextMode: ThemeMode) => {
+    await setMode(nextMode);
+    setMessage("Theme preference saved.");
+  };
+
   if (!prefs) {
     return (
       <View style={styles.container}>
@@ -32,8 +41,28 @@ export function SettingsScreen() {
   }
 
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
       <Text style={styles.title}>Safety Settings</Text>
+
+      <Text style={styles.section}>Theme</Text>
+      <View style={styles.row}>
+        {[
+          { label: "System default", value: "system" as const },
+          { label: "Light mode", value: "light" as const },
+          { label: "Dark mode", value: "dark" as const },
+        ].map((option) => (
+          <Pressable
+            key={option.value}
+            style={[
+              styles.optionButton,
+              mode === option.value && styles.optionActive,
+            ]}
+            onPress={() => updateTheme(option.value).catch(() => undefined)}
+          >
+            <Text style={[styles.optionText, mode === option.value && styles.optionTextActive]}>{option.label}</Text>
+          </Pressable>
+        ))}
+      </View>
 
       <Text style={styles.section}>Alert cancel window</Text>
       <View style={styles.row}>
@@ -48,7 +77,7 @@ export function SettingsScreen() {
               update({ cancelWindowSeconds: seconds as 3 | 5 | 8 }).catch(() => undefined)
             }
           >
-            <Text style={styles.optionText}>{seconds}s</Text>
+            <Text style={[styles.optionText, prefs.cancelWindowSeconds === seconds && styles.optionTextActive]}>{seconds}s</Text>
           </Pressable>
         ))}
       </View>
@@ -59,13 +88,13 @@ export function SettingsScreen() {
           style={[styles.optionButton, prefs.vibrationEnabled && styles.optionActive]}
           onPress={() => update({ vibrationEnabled: true }).catch(() => undefined)}
         >
-          <Text style={styles.optionText}>On</Text>
+          <Text style={[styles.optionText, prefs.vibrationEnabled && styles.optionTextActive]}>On</Text>
         </Pressable>
         <Pressable
           style={[styles.optionButton, !prefs.vibrationEnabled && styles.optionActive]}
           onPress={() => update({ vibrationEnabled: false }).catch(() => undefined)}
         >
-          <Text style={styles.optionText}>Off</Text>
+          <Text style={[styles.optionText, !prefs.vibrationEnabled && styles.optionTextActive]}>Off</Text>
         </Pressable>
       </View>
 
@@ -84,7 +113,7 @@ export function SettingsScreen() {
               }).catch(() => undefined)
             }
           >
-            <Text style={styles.optionText}>{seconds}s</Text>
+            <Text style={[styles.optionText, prefs.autoEscalationSeconds === seconds && styles.optionTextActive]}>{seconds}s</Text>
           </Pressable>
         ))}
       </View>
@@ -95,13 +124,13 @@ export function SettingsScreen() {
           style={[styles.optionButton, prefs.batteryFallbackEnabled && styles.optionActive]}
           onPress={() => update({ batteryFallbackEnabled: true }).catch(() => undefined)}
         >
-          <Text style={styles.optionText}>On</Text>
+          <Text style={[styles.optionText, prefs.batteryFallbackEnabled && styles.optionTextActive]}>On</Text>
         </Pressable>
         <Pressable
           style={[styles.optionButton, !prefs.batteryFallbackEnabled && styles.optionActive]}
           onPress={() => update({ batteryFallbackEnabled: false }).catch(() => undefined)}
         >
-          <Text style={styles.optionText}>Off</Text>
+          <Text style={[styles.optionText, !prefs.batteryFallbackEnabled && styles.optionTextActive]}>Off</Text>
         </Pressable>
       </View>
 
@@ -120,22 +149,25 @@ export function SettingsScreen() {
               }).catch(() => undefined)
             }
           >
-            <Text style={styles.optionText}>{percent}%</Text>
+            <Text style={[styles.optionText, prefs.batteryFallbackThreshold === percent && styles.optionTextActive]}>{percent}%</Text>
           </Pressable>
         ))}
       </View>
 
       {message ? <Text style={styles.message}>{message}</Text> : null}
-    </View>
+    </ScrollView>
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: AppTheme) => StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,
+  },
+  content: {
     padding: 20,
     gap: 12,
+    paddingBottom: 28,
   },
   title: {
     color: colors.text,
@@ -168,6 +200,9 @@ const styles = StyleSheet.create({
     color: colors.text,
     textAlign: "center",
     fontWeight: "700",
+  },
+  optionTextActive: {
+    color: colors.buttonText,
   },
   text: {
     color: colors.subtext,

@@ -42,8 +42,8 @@ import { getErrorMessage } from "../utils/errorMessage";
 import { GestureFeatures } from "../utils/gesture";
 import { buildPostAlertActionNote } from "../utils/safetyFlow";
 import { startShakeSosMonitor } from "../services/shakeSosService";
-import { styles } from "./home/styles";
-import { colors } from "../theme/colors";
+import { createHomeStyles } from "./home/styles";
+import { useTheme } from "../theme/useTheme";
 
 const DEFAULT_PREFS: SafetyPreferences = {
   cancelWindowSeconds: 5,
@@ -110,6 +110,8 @@ const DEFAULT_HEALTH: HealthSnapshot = {
 
 export function HomeScreen() {
   const { user, logout } = useAuth();
+  const { theme } = useTheme();
+  const styles = useMemo(() => createHomeStyles(theme), [theme]);
   const [pendingAlert, setPendingAlert] = useState<PendingAlert | null>(null);
   const [pendingAlertSeconds, setPendingAlertSeconds] = useState<number | null>(null);
   const [safetyPrefs, setSafetyPrefs] = useState<SafetyPreferences>(DEFAULT_PREFS);
@@ -1038,7 +1040,7 @@ export function HomeScreen() {
             disabled={demoLoading}
           >
             {demoLoading ? (
-              <ActivityIndicator color={colors.text} />
+              <ActivityIndicator color={theme.buttonText} />
             ) : (
               <Text style={styles.prototypeButtonText}>Trigger Prototype Alert</Text>
             )}
@@ -1107,7 +1109,7 @@ export function HomeScreen() {
           <TextInput
             style={styles.destinationInput}
             placeholder="Destination (optional)"
-            placeholderTextColor={colors.subtext}
+            placeholderTextColor={theme.textMuted}
             value={safeArrivalDestination}
             onChangeText={setSafeArrivalDestination}
           />

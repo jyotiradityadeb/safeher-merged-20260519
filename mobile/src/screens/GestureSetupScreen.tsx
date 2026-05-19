@@ -1,13 +1,16 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
 import { fetchLatestGlobalModel, simulateFederatedRound } from "../services/federatedService";
 import { startBackgroundLocationTracking, stopBackgroundLocationTracking } from "../services/backgroundLocation";
-import { colors } from "../theme/colors";
+import { AppTheme } from "../theme/colors";
+import { useTheme } from "../theme/useTheme";
 import { getErrorMessage } from "../utils/errorMessage";
 const demoMetrics = require("../../assets/models/gesture_demo_metrics.json");
 
 export function GestureSetupScreen() {
+  const { theme } = useTheme();
+  const styles = useMemo(() => createStyles(theme), [theme]);
   const [message, setMessage] = React.useState("");
   const [modelSummary, setModelSummary] = React.useState<any>({ round_id: 0, metrics: {}, aggregated_weights: [] });
 
@@ -74,20 +77,20 @@ export function GestureSetupScreen() {
         <Text style={styles.buttonText}>Simulate local training update</Text>
       </Pressable>
       <Pressable style={[styles.button, styles.secondaryButton]} onPress={loadModel}>
-        <Text style={styles.buttonText}>Refresh global model</Text>
+        <Text style={styles.secondaryButtonText}>Refresh global model</Text>
       </Pressable>
       <Pressable style={styles.button} onPress={enableTracking}>
         <Text style={styles.buttonText}>Enable background tracking</Text>
       </Pressable>
       <Pressable style={[styles.button, styles.secondaryButton]} onPress={disableTracking}>
-        <Text style={styles.buttonText}>Disable background tracking</Text>
+        <Text style={styles.secondaryButtonText}>Disable background tracking</Text>
       </Pressable>
       {message ? <Text style={styles.message}>{message}</Text> : null}
     </View>
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: AppTheme) => StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,
@@ -142,6 +145,11 @@ const styles = StyleSheet.create({
     borderColor: colors.border,
   },
   buttonText: {
+    color: colors.buttonText,
+    textAlign: "center",
+    fontWeight: "700",
+  },
+  secondaryButtonText: {
     color: colors.text,
     textAlign: "center",
     fontWeight: "700",

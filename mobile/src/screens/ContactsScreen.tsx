@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { FlatList, Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 
 import { api } from "../api/client";
-import { colors } from "../theme/colors";
+import { AppTheme } from "../theme/colors";
+import { useTheme } from "../theme/useTheme";
 import { getErrorMessage } from "../utils/errorMessage";
 
 type Contact = {
@@ -14,6 +15,8 @@ type Contact = {
 };
 
 export function ContactsScreen() {
+  const { theme } = useTheme();
+  const styles = useMemo(() => createStyles(theme), [theme]);
   const [contacts, setContacts] = useState<Contact[]>([]);
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
@@ -74,15 +77,15 @@ export function ContactsScreen() {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Emergency Contacts</Text>
-      <TextInput style={styles.input} placeholder="Name" placeholderTextColor={colors.subtext} value={name} onChangeText={setName} />
-      <TextInput style={styles.input} placeholder="Phone" placeholderTextColor={colors.subtext} value={phone} onChangeText={setPhone} />
-      <TextInput style={styles.input} placeholder="Relationship" placeholderTextColor={colors.subtext} value={relationship} onChangeText={setRelationship} />
+      <TextInput style={styles.input} placeholder="Name" placeholderTextColor={theme.textMuted} value={name} onChangeText={setName} />
+      <TextInput style={styles.input} placeholder="Phone" placeholderTextColor={theme.textMuted} value={phone} onChangeText={setPhone} />
+      <TextInput style={styles.input} placeholder="Relationship" placeholderTextColor={theme.textMuted} value={relationship} onChangeText={setRelationship} />
       <Text style={styles.smsOnly}>Delivery mode: SMS only</Text>
       <Pressable style={styles.button} onPress={addContact}>
         <Text style={styles.buttonText}>Add Contact</Text>
       </Pressable>
       <Pressable style={[styles.button, styles.secondaryButton]} onPress={loadContacts}>
-        <Text style={styles.buttonText}>Refresh Contacts</Text>
+        <Text style={styles.secondaryButtonText}>Refresh Contacts</Text>
       </Pressable>
       {message ? <Text style={styles.message}>{message}</Text> : null}
       <FlatList
@@ -109,7 +112,7 @@ export function ContactsScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: AppTheme) => StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,
@@ -147,6 +150,11 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     textAlign: "center",
+    color: colors.buttonText,
+    fontWeight: "700",
+  },
+  secondaryButtonText: {
+    textAlign: "center",
     color: colors.text,
     fontWeight: "700",
   },
@@ -178,7 +186,7 @@ const styles = StyleSheet.create({
     opacity: 0.7,
   },
   removeText: {
-    color: colors.text,
+    color: colors.buttonText,
     textAlign: "center",
     fontWeight: "700",
   },

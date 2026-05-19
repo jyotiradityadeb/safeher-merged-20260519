@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   ActivityIndicator,
   Linking,
@@ -11,10 +11,13 @@ import {
 
 import { api } from "../api/client";
 import { getLatestLiveRoom, getLatestSmartCheckIn, LiveRoom, SmartCheckIn } from "../services/safetyService";
-import { colors } from "../theme/colors";
+import { AppTheme } from "../theme/colors";
+import { useTheme } from "../theme/useTheme";
 import { getErrorMessage } from "../utils/errorMessage";
 
 export function LiveStatusScreen() {
+  const { theme } = useTheme();
+  const styles = useMemo(() => createStyles(theme), [theme]);
   const [latestAlert, setLatestAlert] = useState<any>(null);
   const [latestLocation, setLatestLocation] = useState<any>(null);
   const [liveRoom, setLiveRoom] = useState<LiveRoom | null>(null);
@@ -55,9 +58,9 @@ export function LiveStatusScreen() {
       <Pressable style={styles.refreshButton} onPress={loadLatest}>
         <Text style={styles.refreshText}>Refresh Status</Text>
       </Pressable>
-      {loading ? <ActivityIndicator color={colors.primary} style={{ marginBottom: 16 }} /> : null}
+      {loading ? <ActivityIndicator color={theme.primary} style={{ marginBottom: 16 }} /> : null}
       {error ? <Text style={styles.error}>{error}</Text> : null}
-      <View style={[styles.badge, { backgroundColor: latestAlert ? colors.danger : colors.success }]}>
+      <View style={[styles.badge, { backgroundColor: latestAlert ? theme.danger : theme.success }]}>
         <Text style={styles.badgeText}>{latestAlert ? "Alert Triggered" : "Safe"}</Text>
       </View>
 
@@ -125,7 +128,7 @@ export function LiveStatusScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: AppTheme) => StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,
@@ -157,7 +160,7 @@ const styles = StyleSheet.create({
     fontWeight: "700",
   },
   badgeText: {
-    color: colors.text,
+    color: colors.buttonText,
     fontWeight: "700",
   },
   card: {
@@ -186,7 +189,7 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   linkText: {
-    color: colors.text,
+    color: colors.buttonText,
     fontWeight: "700",
     textAlign: "center",
   },

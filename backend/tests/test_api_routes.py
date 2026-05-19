@@ -9,13 +9,13 @@ from app.db.database import get_database
 from .conftest import FakeCollection, FakeDatabase, seeded_db
 
 
-def create_test_client(db, user=None):
+def create_test_client(db, user=None, base_url="http://testserver"):
     app = FastAPI()
     app.include_router(router, prefix="/api")
     app.dependency_overrides[get_database] = lambda: db
     if user is not None:
         app.dependency_overrides[get_current_user] = lambda: user
-    return TestClient(app)
+    return TestClient(app, base_url=base_url)
 
 
 def test_health_route_returns_ok():
@@ -333,3 +333,59 @@ def test_safety_routes_live_room_and_smart_check_in(monkeypatch):
     )
     assert checkin_ack.status_code == 200
     assert checkin_ack.json()["status"] == "safe"
+
+
+def test_alert_route_uses_current_loca_lt_host_for_public_link(monkeypatch):
+    db, user_id = seeded_db()
+    user = {
+        "id": user_id,
+        "email": "demo@safeher.app",
+        "full_name": "Demo User",
+        "phone_number": "+919999999999",
+    }
+    client = create_test_client(db, user=user, base_url="https://demo-run.loca.lt")
+
+    async def fake_post_alert(*args, **kwargs):
+        return [{"contact": "Mother", "status": "simulated"}]
+
+    async def fake_push(*args, **kwargs):
+        return [{"token": "expo-token", "status": "simulated"}]
+
+    async def fake_broadcast(*args, **kwargs):
+        return None
+
+    monkeypatch.setattr(
+        "app.services.notification_service.NotificationService.dispatch_alert",
+        fake_post_alert,
+    )
+    monkeypatch.setattr(
+        "app.services.push_service.PushService.send_alert_notification",
+        fake_push,
+    )
+    monkeypatch.setattr("app.services.alert_service.realtime_manager.broadcast", fake_broadcast)
+
+    response = client.post(
+        "/api/alerts",
+        json={
+            "gesture_label": "distress_swipe",
+            "confidence": 0.94,
+            "location": {
+                "latitude": 12.34,
+                "longitude": 56.78,
+                "accuracy": 5,
+            },
+            "features": {
+                "coordinates": [[0, 0], [1, 1]],
+                "duration_ms": 900,
+                "average_speed": 0.4,
+                "max_speed": 1.1,
+                "total_distance": 280,
+                "direction_changes": 4,
+            },
+            "triggered_at": datetime.now(timezone.utc).isoformat(),
+        },
+    )
+
+    assert response.status_code == 200
+    public_link = response.json()["trusted_circle_room"]["public_link"]
+    assert public_link.startswith("https://demo-run.loca.lt/public/live-room/")
